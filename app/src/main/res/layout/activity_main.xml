@@ -54,11 +54,13 @@
         android:layout_height="50dp"
         android:layout_marginTop="@dimen/default_margin"
         app:line_count="30"
-        app:line_width="2dp"
+        app:line_width="10dp"
+        app:line_width_inter_growth="true"
         app:progress_background_color="@color/holo_darker_gray"
         app:progress_start_color="@color/holo_orange_light"
-        app:progress_stroke_width="1dp"
+        app:progress_stroke_width="2dp"
         app:progress_style="line"
+        app:progress_start_degree="6"
         app:progress_text_color="@color/holo_red_light"
         app:progress_text_size="@dimen/progress_text_size" />
 

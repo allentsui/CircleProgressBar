@@ -43,6 +43,9 @@ public class CircleProgressBar extends View {
     private static final int DEFAULT_LINE_COUNT = 45;
 
     private static final float DEFAULT_LINE_WIDTH = 4.0f;
+
+    private static final boolean DEFAULT_LINE_WIDTH_INTER_GROWTH = false;
+
     private static final float DEFAULT_PROGRESS_TEXT_SIZE = 11.0f;
     private static final float DEFAULT_PROGRESS_STROKE_WIDTH = 1.0f;
 
@@ -69,6 +72,8 @@ public class CircleProgressBar extends View {
     private int mLineCount;
     //Only work well in the Line Style, Height of the line of the progress bar
     private float mLineWidth;
+
+    private boolean mLineWidthInterGrowth;
 
     //Stroke width of the progress of the progress bar
     private float mProgressStrokeWidth;
@@ -137,6 +142,7 @@ public class CircleProgressBar extends View {
                 Paint.Cap.values()[a.getInt(R.styleable.CircleProgressBar_progress_stroke_cap, 0)] : Paint.Cap.BUTT;
 
         mLineWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_line_width, dip2px(getContext(), DEFAULT_LINE_WIDTH));
+        mLineWidthInterGrowth = a.getBoolean(R.styleable.CircleProgressBar_line_width_inter_growth, DEFAULT_LINE_WIDTH_INTER_GROWTH);
         mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_text_size, dip2px(getContext(), DEFAULT_PROGRESS_TEXT_SIZE));
         mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_stroke_width, dip2px(getContext(), DEFAULT_PROGRESS_STROKE_WIDTH));
 
@@ -300,9 +306,10 @@ public class CircleProgressBar extends View {
 
         for (int i = 0; i < mLineCount; i++) {
             float rotateDegrees = i * -unitDegrees;
+            float interCircleRadiusReal = mLineWidthInterGrowth ? mRadius - mLineWidth * ((float) i / mLineCount) : interCircleRadius;
 
-            float startX = mCenterX + (float) Math.cos(rotateDegrees) * interCircleRadius;
-            float startY = mCenterY - (float) Math.sin(rotateDegrees) * interCircleRadius;
+            float startX = mCenterX + (float) Math.cos(rotateDegrees) * interCircleRadiusReal;
+            float startY = mCenterY - (float) Math.sin(rotateDegrees) * interCircleRadiusReal;
 
             float stopX = mCenterX + (float) Math.cos(rotateDegrees) * outerCircleRadius;
             float stopY = mCenterY - (float) Math.sin(rotateDegrees) * outerCircleRadius;
@@ -445,6 +452,11 @@ public class CircleProgressBar extends View {
 
     public void setLineWidth(float lineWidth) {
         mLineWidth = lineWidth;
+        invalidate();
+    }
+
+    public void setDefaultLineWidthInterGrowth(boolean lineWidthInterGrowth) {
+        mLineWidthInterGrowth = lineWidthInterGrowth;
         invalidate();
     }
 
