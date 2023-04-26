@@ -35,7 +35,7 @@ public class CircleProgressBar extends View {
     public static final int SWEEP = 2;
 
     private static final int DEFAULT_MAX = 100;
-    private static final float MAX_DEGREE = 360.0f;
+    private static final float DEFAULT_MAX_DEGREE = 360.0f;
     private static final float LINEAR_START_DEGREE = 90.0f;
 
     private static final int DEFAULT_START_DEGREE = -90;
@@ -78,6 +78,9 @@ public class CircleProgressBar extends View {
     //Stroke width of the progress of the progress bar
     private float mProgressStrokeWidth;
 
+    //Stroke width of the background of the progress bar
+    private float mProgressBackgroundStrokeWidth;
+
     //Text size of the progress of the progress bar
     private float mProgressTextSize;
 
@@ -92,6 +95,9 @@ public class CircleProgressBar extends View {
 
     //the rotate degree of the canvas, default is -90.
     private int mStartDegree;
+
+    //the sweep degree of the canvas, default is 360.
+    private float mMaxDegree;
 
     // whether draw the background only outside the progress area or not
     private boolean mDrawBackgroundOutsideProgress;
@@ -145,6 +151,7 @@ public class CircleProgressBar extends View {
         mLineWidthInterGrowth = a.getBoolean(R.styleable.CircleProgressBar_line_width_inter_growth, DEFAULT_LINE_WIDTH_INTER_GROWTH);
         mProgressTextSize = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_text_size, dip2px(getContext(), DEFAULT_PROGRESS_TEXT_SIZE));
         mProgressStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_stroke_width, dip2px(getContext(), DEFAULT_PROGRESS_STROKE_WIDTH));
+        mProgressBackgroundStrokeWidth = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_background_stroke_width, (int) mProgressStrokeWidth);
 
         mProgressStartColor = a.getColor(R.styleable.CircleProgressBar_progress_start_color, Color.parseColor(COLOR_FFF2A670));
         mProgressEndColor = a.getColor(R.styleable.CircleProgressBar_progress_end_color, Color.parseColor(COLOR_FFF2A670));
@@ -152,6 +159,7 @@ public class CircleProgressBar extends View {
         mProgressBackgroundColor = a.getColor(R.styleable.CircleProgressBar_progress_background_color, Color.parseColor(COLOR_FFD3D3D5));
 
         mStartDegree = a.getInt(R.styleable.CircleProgressBar_progress_start_degree, DEFAULT_START_DEGREE);
+        mMaxDegree = a.getFloat(R.styleable.CircleProgressBar_progress_max_degree, DEFAULT_MAX_DEGREE);
         mDrawBackgroundOutsideProgress = a.getBoolean(R.styleable.CircleProgressBar_drawBackgroundOutsideProgress, false);
 
         mBlurRadius = a.getDimensionPixelSize(R.styleable.CircleProgressBar_progress_blur_radius, 0);
@@ -188,7 +196,7 @@ public class CircleProgressBar extends View {
         updateMaskBlurFilter();
 
         mProgressBackgroundPaint.setStyle(mStyle == SOLID ? Paint.Style.FILL : Paint.Style.STROKE);
-        mProgressBackgroundPaint.setStrokeWidth(mProgressStrokeWidth);
+        mProgressBackgroundPaint.setStrokeWidth(mProgressBackgroundStrokeWidth);
         mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
         mProgressBackgroundPaint.setStrokeCap(mCap);
     }
@@ -333,13 +341,13 @@ public class CircleProgressBar extends View {
      */
     private void drawSolidProgress(Canvas canvas) {
         if (mDrawBackgroundOutsideProgress) {
-            float startAngle = MAX_DEGREE * mProgress / mMax;
-            float sweepAngle = MAX_DEGREE - startAngle;
+            float startAngle = mMaxDegree * mProgress / mMax;
+            float sweepAngle = mMaxDegree - startAngle;
             canvas.drawArc(mProgressRectF, startAngle, sweepAngle, true, mProgressBackgroundPaint);
         } else {
-            canvas.drawArc(mProgressRectF, 0.0f, MAX_DEGREE, true, mProgressBackgroundPaint);
+            canvas.drawArc(mProgressRectF, 0.0f, mMaxDegree, true, mProgressBackgroundPaint);
         }
-        canvas.drawArc(mProgressRectF, 0.0f, MAX_DEGREE * mProgress / mMax, true, mProgressPaint);
+        canvas.drawArc(mProgressRectF, 0.0f, mMaxDegree * mProgress / mMax, true, mProgressPaint);
     }
 
     /**
@@ -347,13 +355,13 @@ public class CircleProgressBar extends View {
      */
     private void drawSolidLineProgress(Canvas canvas) {
         if (mDrawBackgroundOutsideProgress) {
-            float startAngle = MAX_DEGREE * mProgress / mMax;
-            float sweepAngle = MAX_DEGREE - startAngle;
+            float startAngle = mMaxDegree * mProgress / mMax;
+            float sweepAngle = mMaxDegree - startAngle;
             canvas.drawArc(mProgressRectF, startAngle, sweepAngle, false, mProgressBackgroundPaint);
         } else {
-            canvas.drawArc(mProgressRectF, 0.0f, MAX_DEGREE, false, mProgressBackgroundPaint);
+            canvas.drawArc(mProgressRectF, 0.0f, mMaxDegree, false, mProgressBackgroundPaint);
         }
-        canvas.drawArc(mProgressRectF, 0.0f, MAX_DEGREE * mProgress / mMax, false, mProgressPaint);
+        canvas.drawArc(mProgressRectF, 0.0f, mMaxDegree * mProgress / mMax, false, mProgressPaint);
     }
 
     /**
@@ -413,6 +421,12 @@ public class CircleProgressBar extends View {
         updateProgressShader();
 
         mProgressRectF.inset(mProgressStrokeWidth / 2, mProgressStrokeWidth / 2);
+
+        invalidate();
+    }
+
+    public void setProgressBackgroundStrokeWidth(float progressBackgroundStrokeWidth) {
+        mProgressBackgroundStrokeWidth = progressBackgroundStrokeWidth;
 
         invalidate();
     }
